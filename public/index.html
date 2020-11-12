@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>⛳️ Play Nine</title>
+  </head>
+  <body>
+
+    <div class="pages">
+      <div id="enter room page">
+        <h1>🏌️‍♀️ Play Nine! 🏌️‍♂️</h1>
+        <input type="button" name="button" id="create lobby button" value="Create New Lobby">
+        <br><br>
+
+        <input type="text" id="lobby field" placeholder="Enter Lobby Id" onSubmit="return false;">
+        <input type="button" name="button" id="enter lobby button" value="Enter Lobby">
+      </div>
+
+      <div id="play game page" style="display:none">
+        <h1 id="lobby header"></h1>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js" type="text/javascript"></script>
+  </body>
+</html>
