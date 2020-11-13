@@ -27,7 +27,6 @@ io.sockets.on('connection', (socket) => {
     var joined = gameManager.addPlayerToGame(lobbyId, socket.id);
     socket.emit('successful join?', { lobbyId: lobbyId, joined: joined });
 
-    gameManager.setCurrentPlayerOfGame(lobbyId, socket.id);
     socket.join(lobbyId);
     socket.emit('update game ui', gameManager.getGameState(lobbyId));
     console.log(`new game: <player id=${socket.id}> created ${lobbyId}`);

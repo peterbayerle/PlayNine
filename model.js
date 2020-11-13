@@ -1,30 +1,29 @@
 class Game {
   constructor(lobbyId) {
     this.lobbyId = lobbyId;
-    this.player1Id = null;
-    this.player2Id = null;
+    this.players = { p1: null, p2: null };
     this.currentScore = 0;
-    this.currentPlayer = this.player1Id;
+    this.currentPlayer = 'p1';
   };
 
   isEmpty() {
-    return !this.player1Id && !this.player2Id;
+    return !this.players.p1 && !this.players.p2;
   }
 
   setCurrentPlayer(playerId) {
-    this.currentPlayer = playerId;
+    this.currentPlayer = players.p1 == playerId ? 'p1' : 'p2';
   }
 
   playerInGame(playerId) {
-    return this.player1Id == playerId || this.player2Id == playerId;
+    return this.players.p1 == playerId || this.players.p2 == playerId;
   }
 
   addPlayer(newPlayerId) {
-    if (!this.player1Id) {
-      this.player1Id = newPlayerId;
+    if (!this.players.p1) {
+      this.players.p1 = newPlayerId;
       return true;
-    } else if (!this.player2Id) {
-      this.player2Id = newPlayerId;
+    } else if (!this.players.p2) {
+      this.players.p2 = newPlayerId;
       return true;
     }
     return false; // both players are in the lobby!
@@ -33,10 +32,10 @@ class Game {
   removePlayer(playerId) {
     if (!this.playerInGame(playerId)) return;
 
-    if (this.player1Id == playerId) {
-      this.player1Id = null;
+    if (this.players.p1 == playerId) {
+      this.players.p1 = null;
     } else {
-      this.player2Id = null;
+      this.players.p2 = null;
     }
     return;
   };
@@ -107,13 +106,9 @@ class GameManager {
 
   switchCurrentPlayer(lobbyId) {
     var game = this.lobbyToGame[lobbyId];
-    console.log(`current player: ${game.currentPlayer}`);
     if (game) {
-      game.currentPlayer = (game.currentPlayer == game.player1Id) ?
-        game.player2Id:
-        game.player1Id;
+      game.currentPlayer = (game.currentPlayer == 'p1') ? 'p2' : 'p1';
     }
-    console.log(`new current player: ${game.currentPlayer}`);
   };
 
   getGameState(lobbyId) {
@@ -124,7 +119,7 @@ class GameManager {
     }
 
     return {
-      currentPlayer: game.currentPlayer,
+      currentPlayer: game.players[game.currentPlayer],
       currentScore: game.currentScore
     };
   };

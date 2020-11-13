@@ -28,7 +28,7 @@ export class View {
   };
 
   updateGameUI(data) {
-    var yourTurn = data.you == data.currentPlayer
+    var yourTurn = data.you == data.currentPlayer;
     this.yourTurn.style.display = yourTurn ? 'block' : 'none';
     this.opponentsTurn.style.display = yourTurn ? 'none' : 'block';
     this.score.innerHTML = data.currentScore;
