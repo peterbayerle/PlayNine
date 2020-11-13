@@ -8,6 +8,7 @@ export class View {
     this.createLobbyButton = document.getElementById('create lobby button');
     this.enterLobbyButton = document.getElementById('enter lobby button');
     this.lobbyField = document.getElementById('lobby field');
+    this.lobbyFull = document.getElementById('lobby full');
 
     // playGamePage divs
     this.lobbyHeader = document.getElementById('lobby header');
@@ -17,7 +18,13 @@ export class View {
     this.increaseScoreButton = document.getElementById('increase score');
   };
 
+  didNotJoin() {
+    this.lobbyFull.style.display = 'block';
+    this.lobbyFull.style.color = 'red';
+  }
+
   showGamePage(lobbyId) {
+    this.lobbyFull.display = 'none';
     this.enterRoomPage.style.display = 'none';
     this.playGamePage.style.display = 'block';
     this.lobbyHeader.innerHTML = `Lobby Id: ${lobbyId}`;

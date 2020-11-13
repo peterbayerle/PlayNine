@@ -10,13 +10,11 @@ var lobbyId;
 
 socket.on('player joined', data => {
   playerId = data.playerId;
-  console.log(`my playerId is ${playerId}`);
+  // console.log(`my playerId is ${playerId}`);
 });
 
 // methods for dealing with homepage
 view.createLobbyButton.onclick = () => {
-  // var lobbyId = generateId();
-  // view.showGamePage(lobbyId)
   socket.emit('created lobby', { });
 };
 
@@ -40,6 +38,8 @@ socket.on('successful join?', data => {
   if (data.joined) {
     lobbyId = data.lobbyId;
     view.showGamePage(data.lobbyId)
+  } else {
+    view.didNotJoin();
   }
 });
 
