@@ -11,6 +11,10 @@ class Game {
     return !this.player1Id && !this.player2Id;
   }
 
+  setCurrentPlayer(playerId) {
+    this.currentPlayer = playerId;
+  }
+
   playerInGame(playerId) {
     return this.player1Id == playerId || this.player2Id == playerId;
   }
@@ -44,9 +48,22 @@ class GameManager {
     this.playerToLobby = {}; // maps player id to lobby id
   };
 
-  addGame(lobbyId) {
-    this.lobbyToGame[lobbyId] = new Game(lobbyId);
+  generateId() {
+    return Math.random().toString(36).substring(7);
   };
+
+  addGame() {
+    var lobbyId = this.generateId();
+    this.lobbyToGame[lobbyId] = new Game(lobbyId);
+    return lobbyId;
+  };
+
+  setCurrentPlayerOfGame(lobbyId, playerId) {
+    var game = this.lobbyToGame[lobbyId]
+    if (game) {
+      game.setCurrentPlayer(playerId)
+    }
+  }
 
   addPlayerToGame(lobbyId, playerId) {
     // returns true if player was successfully added, otherwise false
@@ -80,6 +97,38 @@ class GameManager {
     }
     return { msg: 'players remain' };
   }
+
+  increaseScore(lobbyId) {
+    var game = this.lobbyToGame[lobbyId];
+    if (game) {
+      game.currentScore++;
+    }
+  };
+
+  switchCurrentPlayer(lobbyId) {
+    var game = this.lobbyToGame[lobbyId];
+    console.log(`current player: ${game.currentPlayer}`);
+    if (game) {
+      game.currentPlayer = (game.currentPlayer == game.player1Id) ?
+        game.player2Id:
+        game.player1Id;
+    }
+    console.log(`new current player: ${game.currentPlayer}`);
+  };
+
+  getGameState(lobbyId) {
+    var game = this.lobbyToGame[lobbyId];
+
+    if (!game) {
+      return {};
+    }
+
+    return {
+      currentPlayer: game.currentPlayer,
+      currentScore: game.currentScore
+    };
+  };
+
 };
 
 module.exports = GameManager;

@@ -23,9 +23,14 @@ io.sockets.on('connection', (socket) => {
 
   // player creates new lobby
   socket.on('created lobby', (data) => {
-    gameManager.addGame(data.lobbyId)
-    gameManager.addPlayerToGame(data.lobbyId, socket.id);
-    console.log(`new game: <player id=${socket.id}> @ ${data.lobbyId}`);
+    var lobbyId = gameManager.addGame()
+    var joined = gameManager.addPlayerToGame(lobbyId, socket.id);
+    socket.emit('successful join?', { lobbyId: lobbyId, joined: joined });
+
+    gameManager.setCurrentPlayerOfGame(lobbyId, socket.id);
+    socket.join(lobbyId);
+    socket.emit('update game ui', gameManager.getGameState(lobbyId));
+    console.log(`new game: <player id=${socket.id}> created ${lobbyId}`);
   });
 
   // player attempts to join existing lobby
@@ -34,18 +39,24 @@ io.sockets.on('connection', (socket) => {
     socket.emit('successful join?', { lobbyId: data.lobbyId, joined: joined });
 
     if (joined) {
-      console.log(`joined: <player id=${socket.id}> @ ${data.lobbyId}`);
+      socket.join(data.lobbyId);
+      socket.emit('update game ui', gameManager.getGameState(data.lobbyId));
+      console.log(`successful join: <player id=${socket.id}> entered ${data.lobbyId}`);
     } else {
-      console.log(`failed to join: <player id=${socket.id}> @ ${data.lobbyId}`);
+      console.log(`failed join: <player id=${socket.id}> did not enter ${data.lobbyId}`);
     }
-    console.log(gameManager.playerToLobby);
-    console.log(gameManager.lobbyToGame);
+  });
+
+  socket.on('increased score', (data) => {
+    gameManager.increaseScore(data.lobbyId);
+    gameManager.switchCurrentPlayer(data.lobbyId);
+    io.to(data.lobbyId).emit('update game ui', gameManager.getGameState(data.lobbyId));
   });
 
   // player disconnects from site
   socket.on('disconnect', () => {
     var { msg } = gameManager.removePlayerFromGame(socket.id);
-    console.log(`departing: <player=${socket.id}>, msg=${msg}`);
+    console.log(`departing: <player id=${socket.id}>, msg=${msg}`);
   });
 
 });

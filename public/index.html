@@ -18,10 +18,14 @@
 
       <div id="play game page" style="display:none">
         <h1 id="lobby header"></h1>
+        <h3 id="your turn">it is your turn!</h3>
+        <h3 id="opponents turn">it is your opponent's turn!</h3>
+        <h3 id="score"></h3>
+        <input type="button" name="button" id="increase score" value="Increase score">
       </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="client.js" type="text/javascript"></script>
+    <script src="client.js" type="module"></script>
   </body>
 </html>
