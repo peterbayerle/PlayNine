@@ -1,4 +1,4 @@
-var PlayNine = require('../playNine');
+var PlayNine = require('../model/playNine');
 var assert = require('assert');
 
 var p9 = new PlayNine();

@@ -1,22 +1,23 @@
 var express = require('express');
 var socket = require('socket.io');
 var path = require('path');
-var GameManager = require('./model');
+var GameManager = require('./model/model');
 
 // app setup
 var app = express();
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'public'));
+app.set('view engine', 'pug');
 
 var server = app.listen(3000);
 var io = socket(server);
 
 app.use('/', (req, res) => {
-  res.render('index');
+  res.render('index', {});
 });
 
 var gameManager = new GameManager();
 
-// socket logic
 io.sockets.on('connection', (socket) => {
   console.log(`connected: <player id=${socket.id}>`);
   socket.emit('player joined', { playerId: socket.id });
@@ -46,6 +47,7 @@ io.sockets.on('connection', (socket) => {
     }
   });
 
+  // player clicks increase score button
   socket.on('increased score', (data) => {
     gameManager.increaseScore(data.lobbyId);
     gameManager.switchCurrentPlayer(data.lobbyId);

@@ -1,4 +1,4 @@
-var GameManager = require('../model');
+var GameManager = require('../model/model');
 var assert = require('assert');
 
 var gm = new GameManager();
