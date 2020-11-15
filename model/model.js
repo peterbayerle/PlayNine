@@ -1,22 +1,26 @@
-class Game {
+var PlayNine = require('../model/playNine');
+
+class GameManager {
+  // used to manage a PlayNine instance
   constructor(lobbyId) {
     this.lobbyId = lobbyId;
+    this.game = new PlayNine();
     this.players = { p1: null, p2: null };
-    this.currentScore = 0;
     this.currentPlayer = 'p1';
+    this.justDid = null; // 'discard' || 'draw'
   };
 
   isEmpty() {
     return !this.players.p1 && !this.players.p2;
-  }
+  };
 
   setCurrentPlayer(playerId) {
     this.currentPlayer = players.p1 == playerId ? 'p1' : 'p2';
-  }
+  };
 
   playerInGame(playerId) {
     return this.players.p1 == playerId || this.players.p2 == playerId;
-  }
+  };
 
   addPlayer(newPlayerId) {
     if (!this.players.p1) {
@@ -39,9 +43,35 @@ class Game {
     }
     return;
   };
+
+  displayInfo() {
+    var displayInfo = this.game.displayInfo();
+    displayInfo.currentPlayer = this.players[this.currentPlayer];
+    displayInfo[this.players['p1']] = displayInfo.p1;
+    displayInfo[this.players['p2']] = displayInfo.p2;
+    displayInfo.players = Object.values(this.players);
+
+    displayInfo.justDid = this.justDid;
+
+    if (displayInfo.mode == 'end') {
+      if (this.game.faceUp[this.currentPlayer] < 8) {
+        displayInfo.mode = 'play';
+      }
+      displayInfo.scoresById = { };
+      displayInfo.scoresById[this.players.p1] = displayInfo.scores.p1;
+      displayInfo.scoresById[this.players.p2] = displayInfo.scores.p2;
+    }
+
+    delete displayInfo.p1;
+    delete displayInfo.p2;
+    delete displayInfo.scores;
+    return displayInfo;
+  };
+
 };
 
-class GameManager {
+class CurrentGames {
+  // used to keep track of all games being played
   constructor() {
     this.lobbyToGame = {}; // maps lobby id to game
     this.playerToLobby = {}; // maps player id to lobby id
@@ -53,7 +83,7 @@ class GameManager {
 
   addGame() {
     var lobbyId = this.generateId();
-    this.lobbyToGame[lobbyId] = new Game(lobbyId);
+    this.lobbyToGame[lobbyId] = new GameManager(lobbyId);
     return lobbyId;
   };
 
@@ -95,13 +125,6 @@ class GameManager {
       return { msg: 'deleted game' };
     }
     return { msg: 'players remain' };
-  }
-
-  increaseScore(lobbyId) {
-    var game = this.lobbyToGame[lobbyId];
-    if (game) {
-      game.currentScore++;
-    }
   };
 
   switchCurrentPlayer(lobbyId) {
@@ -111,19 +134,42 @@ class GameManager {
     }
   };
 
-  getGameState(lobbyId) {
+  setCurrentAction(lobbyId, action) {
     var game = this.lobbyToGame[lobbyId];
+    game.justDid = action;
+  }
 
-    if (!game) {
-      return {};
+  handlePlayerAction(playerId, move) {
+    var lobbyId = this.playerToLobby[playerId];
+    var game = this.lobbyToGame[lobbyId];
+    var playerNum = game.players.p1 == playerId ? 'p1' : 'p2';
+    var { action, cardNum } = move;
+    switch (action) {
+      case 'flip':
+        game.game.flip(playerNum, cardNum);
+        break;
+      case 'discard':
+        game.game.discardToHand(playerNum, cardNum);
+        break;
+      case 'draw':
+        game.game.deckToHand(playerNum, cardNum);
+        break;
+      case 'draw to discard':
+      case 'skipped turn':
+        game.game.deckToDiscard();
+        break;
+      default:
+        break;
     }
+    game.justDid = action == 'draw to discard'? 'draw to discard' : null;
+    return game.justDid;
+  };
 
-    return {
-      currentPlayer: game.players[game.currentPlayer],
-      currentScore: game.currentScore
-    };
+  displayInfo(lobbyId) {
+    var game = this.lobbyToGame[lobbyId];
+    return game.displayInfo();
   };
 
 };
 
-module.exports = GameManager;
+module.exports = CurrentGames;

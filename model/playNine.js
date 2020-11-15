@@ -17,35 +17,64 @@ class PlayNine {
       else { this.playerHands.p2.push([this._deck.pop(), 'down']); }
     }
 
+    this.faceUp = { p1: 0 , p2: 0 };
+    this._mode = 'tee up';
+    this._teeUp = { p1: 0, p2: 0 };
+
   };
 
-  // at the beginning of the game, players flip 2 cards of their choosing
-  flip(player, cardNum) {
+  flip(playerNum, cardNum) {
     // returns true if card flipped, false if already flipped/invalid cardNum
     if (cardNum < 0 || cardNum > 7) return false;
-    var flipped = this.playerHands[player][cardNum][1] == 'down';
-    this.playerHands[player][cardNum][1] = 'up';
-    return flipped;
+    var wasFaceDown = this.playerHands[playerNum][cardNum][1] == 'down';
+    this.playerHands[playerNum][cardNum][1] = 'up';
+
+    // if the card was face down initially, then add to the player's faceUp count
+    if (wasFaceDown) {
+      this.faceUp[playerNum] += 1;
+    }
+
+    // handle state
+    if (this._mode == 'tee up') {
+      this._teeUp[playerNum] += 1;
+    }
+
+    return wasFaceDown;
   };
 
-  // players can take 2 actions
-  discardToHand(player, cardNum) {
+  discardToHand(playerNum, cardNum) {
     // returns true if discard added to player hand, false if discard empty/invalid cardNum
     if (cardNum < 0 || cardNum > 7 || !this.discard.length) return false;
-    var temp = this.playerHands[player][cardNum][0];
-    this.playerHands[player][cardNum][0] = this.discard.pop();
-    this.playerHands[player][cardNum][1] = 'up';
+    var [temp, wasFaceDown] = this.playerHands[playerNum][cardNum];
+
+    this.playerHands[playerNum][cardNum][0] = this.discard.pop();
+    this.playerHands[playerNum][cardNum][1] = 'up';
     this.discard.push(temp);
+
+    if (wasFaceDown == 'down') {
+      this.faceUp[playerNum] += 1;
+    }
+
     return true;
   };
 
-  deckToHand(player, cardNum) {
+  deckToDiscard() {
+    this.discard.push(this.deck.pop());
+    return true;
+  };
+
+  deckToHand(playerNum, cardNum) {
     // returns true if discard added to player hand, false if invalid cardNum
     if (cardNum < 0 || cardNum > 7) return false;
-    var temp = this.playerHands[player][cardNum][0];
-    this.playerHands[player][cardNum][0] = this.deck.pop();
-    this.playerHands[player][cardNum][1] = 'up'
+    var [temp, wasFaceDown] = this.playerHands[playerNum][cardNum];
+    this.playerHands[playerNum][cardNum][0] = this.deck.pop();
+    this.playerHands[playerNum][cardNum][1] = 'up'
     this.discard.push(temp);
+
+    if (wasFaceDown == 'down') {
+      this.faceUp[playerNum] += 1;
+    }
+
     return true;
   };
 
@@ -94,7 +123,7 @@ class PlayNine {
           }
           counts[idx] += 1;
         } else {
-          points[player] += cards[i] + cards[i+4];
+          points[player] += parseInt(cards[i]) + parseInt(cards[i+4]);
         }
       }
       for (var c of counts) {
@@ -104,12 +133,27 @@ class PlayNine {
     return points;
   };
 
-  get gameState() {
+  get mode() {
+    if (this._mode == 'tee up') {
+      if (this._teeUp.p1 + this._teeUp.p2 == 4) {
+        this._mode = 'play';
+      }
+    } else if (this._mode == 'play') {
+      if (this.faceUp.p1 == 8 || this.faceUp.p2 == 8) {
+        this._mode = 'end';
+      }
+    }
+    return this._mode;
+  };
+
+  displayInfo() {
     return {
+      mode: this.mode,
       p1 : this.playerHandsDisplay.p1,
       p2: this.playerHandsDisplay.p2,
-      topDeck: this.deck[this.deck.length-1] || null,
-      topDiscard: this.discard[this.discard.length-1] || null
+      topDeck: this.deck[this.deck.length-1],
+      topDiscard: this.discard.length ? this.discard[this.discard.length-1] : null,
+      scores: this.mode == 'end' ? this.scores : {}
     }
   };
 

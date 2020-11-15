@@ -41,3 +41,35 @@ p9.playerHands = {
 var scores = p9.scores
 assert(scores.p1 == -20);
 assert(scores.p2 == -10);
+
+// testing modes
+p9 = new PlayNine();
+p9.flip('p1', 0);
+assert(p9.mode == 'tee up');
+p9.flip('p1', 1);
+assert(p9.mode == 'tee up');
+p9.flip('p2', 0);
+assert(p9.mode == 'tee up');
+p9.flip('p2', 1);
+assert(p9.mode == 'play');
+
+for (var i=2; i<8; i++) {
+  assert(p9.mode == 'play');
+  p9.deckToHand('p1', i);
+}
+assert(p9.mode == 'end');
+
+p9 = new PlayNine();
+p9.flip('p1', 0);
+p9.flip('p1', 1);
+p9.flip('p2', 0);
+p9.flip('p2', 1);
+
+p9.discardToHand('p1', 0);
+p9.deckToHand('p1', 1);
+
+for (var i=2; i<8; i++) {
+  assert(p9.mode == 'play');
+  p9.deckToHand('p1', i);
+}
+assert(p9.mode == 'end');

@@ -16,9 +16,17 @@ html(lang='en')
         span(id='lobby full' style='display:none') this lobby is full or does not exist!
     div(id='play game page' style='display:none')
       h1(id='lobby header')
-      h3(id='your turn') it is your turn!
-      h3(id='opponents turn') it is your opponent&apos;s turn!
-      h3(id='score')
-      input(type='button' name='button' id='increase score' value='Increase score')
+      h3(id='tee up header') Tee up ⛳️ flip two cards!
+      h3(id='your turn' style='display:none') it&apos;s your turn!
+      h3(id='opponents turn' style='display:none') it&apos;s your opponent&apos;s turn!
+      each id in ['opponent cards', 'your cards', 'top discard', 'top deck']
+        p(id=id)
+      input(type='button' name='button' id='discard', value='discard pile')
+      input(type='button' name='button' id='draw', value='draw pile')
+      input(type='button' name='button' id='skip', value='skip')
+      <br>
+      each i in [0, 1, 2, 3, 4, 5, 6, 7]
+        input(type='button' name='button' id='card' + i value=i)
+        
     script(src='/socket.io/socket.io.js')
     script(src='client.js' type='module')
