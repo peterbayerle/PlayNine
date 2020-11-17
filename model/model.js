@@ -155,7 +155,6 @@ class CurrentGames {
         game.game.deckToHand(playerNum, cardNum);
         break;
       case 'draw to discard':
-      case 'skipped turn':
         game.game.deckToDiscard();
         break;
       default:

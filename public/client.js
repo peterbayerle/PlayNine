@@ -12,7 +12,6 @@ var justDid;
 
 socket.on('player joined', data => {
   playerId = data.playerId;
-  // console.log(`my playerId is ${playerId}`);
 });
 
 // methods for dealing with homepage
@@ -51,8 +50,8 @@ view.skipButton.onclick = () => {
   { mode, lobbyId, playerId, move: { action: 'skipped turn' }});
 }
 
-for (let i in view.buttons) {
-  var button = view.buttons[i];
+for (let i in view.yourCards) {
+  var button = view.yourCards[i];
   button.onclick = () => {
     if (mode == 'tee up' || justDid == 'draw to discard') {
       socket.emit('player action',
