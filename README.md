@@ -1,3 +1,3 @@
 # ⛳️ Play Nine
 
-Play the game @ [playnine.io](playnine.io)
+Play the game @ [playnine.io](www.playnine.io)
