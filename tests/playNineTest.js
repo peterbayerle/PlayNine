@@ -27,6 +27,14 @@ assert(scores.p1 == -5);
 assert(scores.p2 == -21);
 
 p9.playerHands = {
+  p1: [5, -5, 10, 3, 5, -5, 10, 3],
+  p2: [7, 4, 2, 12, 7, 2, 0, 12],
+};
+var scores = p9.scores
+assert(scores.p1 == -10);
+assert(scores.p2 == 8);
+
+p9.playerHands = {
   p1: [1, 2, 3, 4, 5, 6, 7, 8],
   p2: [1, 1, 1, 0, 1, 1, 1, 0],
 };

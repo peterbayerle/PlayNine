@@ -87,10 +87,10 @@ export class View {
       var yourTurn = data.you == data.currentPlayer;
 
       var clickableCards = null;
-      if (data.justDid == 'draw to discard') {
-        clickableCards = inds;
-      } else if (!yourTurn || !data.justDid) {
+      if (!yourTurn || !data.justDid) {
         clickableCards = 'all';
+      } else if (data.justDid == 'draw to discard') {
+        clickableCards = inds;
       } else {
         clickableCards = [];
       }

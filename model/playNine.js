@@ -1,3 +1,4 @@
+
 class PlayNine {
   constructor() {
     var cards = Array(4).fill(-5);
@@ -115,15 +116,15 @@ class PlayNine {
       var counts = Array(13).fill(0);
       var cards = this.playerHands[player];
       for (let i=0; i<4; i++) {
-        if (cards[i] == cards[i+4]) {
-          var idx = cards[i];
-          if (cards[i] == -5) {
+        if (cards[i][0] == cards[i+4][0]) {
+          var idx = cards[i][0];
+          if (cards[i][0] == -5) {
             points[player] -= 10;
             idx = counts.length-1;
           }
           counts[idx] += 1;
         } else {
-          points[player] += parseInt(cards[i]) + parseInt(cards[i+4]);
+          points[player] += parseInt(cards[i][0]) + parseInt(cards[i+4][0]);
         }
       }
       for (var c of counts) {
