@@ -1,7 +1,7 @@
 var socket;
 import { View } from './view.js'
 
-socket = io.connect('http://localhost:3000');
+socket = io.connect('/');
 var view = new View(document);
 
 // player and game info

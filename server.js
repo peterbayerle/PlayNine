@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'public'));
 app.set('view engine', 'pug');
 
-var server = app.listen(3000);
+var server = app.listen(process.env.PORT || 3000);
 var io = socket(server);
 
 app.use('/', (req, res) => {
