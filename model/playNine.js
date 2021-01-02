@@ -1,4 +1,3 @@
-
 class PlayNine {
   constructor() {
     var cards = Array(4).fill(-5);
@@ -18,10 +17,10 @@ class PlayNine {
       else { this.playerHands.p2.push([this._deck.pop(), 'down']); }
     }
 
+    this.actionsLeft = 3;
     this.faceUp = { p1: 0 , p2: 0 };
     this._mode = 'tee up';
     this._teeUp = { p1: 0, p2: 0 };
-
   };
 
   flip(playerNum, cardNum) {
@@ -141,7 +140,11 @@ class PlayNine {
       }
     } else if (this._mode == 'play') {
       if (this.faceUp.p1 == 8 || this.faceUp.p2 == 8) {
-        this._mode = 'end';
+        if (this.actionsLeft == 0) {
+          this._mode = 'end';
+        } else {
+          this.actionsLeft--;
+        }
       }
     }
     return this._mode;
@@ -155,9 +158,8 @@ class PlayNine {
       topDeck: this.deck[this.deck.length-1],
       topDiscard: this.discard.length ? this.discard[this.discard.length-1] : null,
       scores: this.mode == 'end' ? this.scores : {}
-    }
+    };
   };
-
 };
 
 module.exports = PlayNine;
