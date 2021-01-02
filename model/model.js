@@ -44,27 +44,37 @@ class GameManager {
     return;
   };
 
-  displayInfo() {
-    var displayInfo = this.game.displayInfo();
-    displayInfo.currentPlayer = this.players[this.currentPlayer];
-    displayInfo[this.players['p1']] = displayInfo.p1;
-    displayInfo[this.players['p2']] = displayInfo.p2;
-    displayInfo.players = Object.values(this.players);
+  handle(action, playerId, cardNum) {
+    var playerNum = this.players.p1 == playerId ? 'p1' : 'p2';
 
-    displayInfo.justDid = this.justDid;
-
-    if (displayInfo.mode == 'end') {
-      if (this.game.faceUp[this.currentPlayer] < 8) {
-        displayInfo.mode = 'play';
-      }
-      displayInfo.scoresById = { };
-      displayInfo.scoresById[this.players.p1] = displayInfo.scores.p1;
-      displayInfo.scoresById[this.players.p2] = displayInfo.scores.p2;
+    switch (action) {
+      case 'flip':
+        this.game.flip(playerNum, cardNum);
+        break;
+      case 'discard':
+        this.game.discardToHand(playerNum, cardNum);
+        break;
+      case 'draw':
+        this.game.deckToHand(playerNum, cardNum);
+        break;
+      case 'draw to discard':
+        this.game.deckToDiscard();
+        break;
+      default:
+        break;
     }
 
-    delete displayInfo.p1;
-    delete displayInfo.p2;
-    delete displayInfo.scores;
+    this.justDid = action == 'draw to discard' ? 'draw to discard' : null;
+    return this.justDid;
+  };
+
+  state() {
+    var displayInfo = this.game.displayInfo();
+    displayInfo.currentPlayer = this.players[this.currentPlayer];
+    displayInfo.players = this.players
+    displayInfo.justDid = this.justDid;
+    displayInfo.topDeck = this.justDid == 'draw' ? displayInfo.topDeck : null;
+
     return displayInfo;
   };
 
@@ -142,31 +152,16 @@ class CurrentGames {
   handlePlayerAction(playerId, move) {
     var lobbyId = this.playerToLobby[playerId];
     var game = this.lobbyToGame[lobbyId];
-    var playerNum = game.players.p1 == playerId ? 'p1' : 'p2';
     var { action, cardNum } = move;
-    switch (action) {
-      case 'flip':
-        game.game.flip(playerNum, cardNum);
-        break;
-      case 'discard':
-        game.game.discardToHand(playerNum, cardNum);
-        break;
-      case 'draw':
-        game.game.deckToHand(playerNum, cardNum);
-        break;
-      case 'draw to discard':
-        game.game.deckToDiscard();
-        break;
-      default:
-        break;
-    }
-    game.justDid = action == 'draw to discard'? 'draw to discard' : null;
-    return game.justDid;
+
+    var justDid = game.handle(action, playerId, cardNum);
+
+    return justDid;
   };
 
-  displayInfo(lobbyId) {
+  state(lobbyId) {
     var game = this.lobbyToGame[lobbyId];
-    return game.displayInfo();
+    return game.state();
   };
 
 };
